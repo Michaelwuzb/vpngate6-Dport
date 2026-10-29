@@ -4395,6 +4395,6 @@ if __name__ == "__main__":
         load_or_create_guard_token()
         print(f"已更新管理凭据: 账号 {new_user}")
         print(f"面板地址: {ui_tls.describe(DATA_DIR)['scheme']}://<服务器IP>:{UI_PORT}/")
-        print("请重启面板生效: systemctl restart aimilivpn")
+        print("请重启面板生效: systemctl restart MichaelVpn")
         sys.exit(0)
     main()

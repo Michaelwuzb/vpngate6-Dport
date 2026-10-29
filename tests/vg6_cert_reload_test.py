@@ -1,10 +1,10 @@
 """验证"证书续期后面板自动热重载，不重启、不断隧道"。
 
-需求原话：「证书续签的都要系自动。aimilivpn 跟 s-ui 一样，同时更新证书的时期。
+需求原话：「证书续签的都要系自动。MichaelVpn 跟 s-ui 一样，同时更新证书的时期。
 不要有过期什么的」。
 
 背景：acme.sh / certbot / mailcow 续期只是把新文件写进磁盘，进程手里的 SSLContext
-还是启动时那份。旧做法是让续期脚本顺带 `systemctl restart aimilivpn`——代价是 6 条隧道
+还是启动时那份。旧做法是让续期脚本顺带 `systemctl restart MichaelVpn`——代价是 6 条隧道
 断 30 秒，而且忘了配 reload 就等于没续：到期那天面板连不上，IP 访问又被 403 挡着，
 只能 SSH 进去 touch allow_ip_host。所以改成进程自检 + 热重载。
 
@@ -73,12 +73,12 @@ def openssl_available():
 HAVE_OPENSSL = openssl_available()
 
 # ---------------------------------------------------------------- 隔离副本
-# 导入主程序会读 /opt/aimilivpn 下的配置，改到临时目录，别动真实安装。
+# 导入主程序会读 /opt/MichaelVpn 下的配置，改到临时目录，别动真实安装。
 _ROOT = os.path.join(WORK, "opt").replace("\\", "/")
 for f in sorted(n for n in os.listdir(FIX) if n.endswith(".py")):
     dst = os.path.join(WORK, f)
     txt = open(os.path.join(FIX, f), encoding="utf-8").read()
-    txt = txt.replace('Path("/opt/aimilivpn")', f'Path(r"{_ROOT}")')
+    txt = txt.replace('Path("/opt/MichaelVpn")', f'Path(r"{_ROOT}")')
     open(dst, "w", encoding="utf-8").write(txt)
 
 sys.path.insert(0, WORK)

@@ -307,7 +307,7 @@ def _default_domain(settings: dict) -> str:
     host = host.strip().rstrip(".")
     # getfqdn 在没配 DNS 的机器上会返回 localhost / 一串没意义的名字，别拿它当 CN
     if not host or host in ("localhost", "localhost.localdomain") or "." not in host:
-        return "aimilivpn.panel"
+        return "MichaelVpn.panel"
     return host
 
 

@@ -719,7 +719,7 @@ cd /opt/aimilivpn && bash install.sh --guard-only
 
 ## 🔬 新节点标记 / 测速的可调参数
 
-给 `aimilivpn.service` 加 `Environment=` 即可覆盖（改完 `systemctl daemon-reload && systemctl restart aimilivpn`）。
+给 `MichaelVpn.service` 加 `Environment=` 即可覆盖（改完 `systemctl daemon-reload && systemctl restart MichaelVpn`）。
 
 | 变量 | 默认 | 说明 |
 |------|------|------|
@@ -765,7 +765,7 @@ cd /opt/aimilivpn && bash install.sh --guard-only
 [CH0] Starting tun0...                            <- 45 秒后失败
 ```
 
-一眼看去像服务崩了在无限重启，其实 `systemctl show aimilivpn -p NRestarts` 是 `0`——
+一眼看去像服务崩了在无限重启，其实 `systemctl show MichaelVpn -p NRestarts` 是 `0`——
 systemd 一次都没重启过，是看门狗在自己转圈。典型例子：美国节点在 VPNGate 上常年只有
 1 个 Cloudflare WARP，`United States + residential` 根本没有货，只能放宽到机房 IP，
 而这个 IP 的 TCP 端口经常是不通的。

@@ -654,7 +654,7 @@ unit_txt = re.search(
 unit = unit_txt.group(1) if unit_txt else ""
 check("G1d 守护单元文件能被解析出来", bool(unit) and "ExecStart" in unit)
 check("G2a 守护排在被守护的面板服务之后启动",
-      "After=" in unit and "aimilivpn.service" in unit.split("After=")[1].split("\n")[0], unit)
+      "After=" in unit and "MichaelVpn.service" in unit.split("After=")[1].split("\n")[0], unit)
 check("G2b After= 只写一行（写两行后者会静默覆盖前者）",
       len([l for l in unit.splitlines() if l.startswith("After=")]) == 1)
 check("G2c 守护崩溃后能无限重启", "Restart=always" in unit and "StartLimitIntervalSec=0" in unit)

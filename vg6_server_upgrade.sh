@@ -26,7 +26,7 @@
 set -u
 
 INSTALL_DIR="${VPNGATE_INSTALL_DIR:-/opt/aimilivpn}"
-SERVICE="aimilivpn"
+SERVICE="MichaelVpn"
 GUARD_SERVICE="vpngate6-guard"
 PANEL_PORT="${VPNGATE_UI_PORT:-8787}"
 PROXY_FROM=7928
@@ -334,6 +334,13 @@ sync_artifacts() {
 stop_service() {
     log "停止服务（9 条隧道会断，这就是停机窗口）"
     systemctl stop "$SERVICE" 2>/dev/null || true
+    # 服务名从 aimilivpn 改成了 MichaelVpn：旧单元还挂着就停掉删掉，避免抢端口
+    if [ -f /lib/systemd/system/aimilivpn.service ]; then
+        systemctl stop aimilivpn 2>/dev/null || true
+        systemctl disable aimilivpn 2>/dev/null || true
+        rm -f /lib/systemd/system/aimilivpn.service
+        systemctl daemon-reload
+    fi
     sleep 3
     ok "状态: $(systemctl is-active "$SERVICE" 2>/dev/null || echo inactive)   残留 tun: $(ip -o link show type tun 2>/dev/null | wc -l)"
 }
@@ -462,6 +469,13 @@ do_rollback() {
     [ "$ans" = "y" ] || [ "$ans" = "Y" ] || { echo "已取消"; exit 0; }
 
     systemctl stop "$SERVICE" 2>/dev/null || true
+    # 服务名从 aimilivpn 改成了 MichaelVpn：旧单元还挂着就停掉删掉，避免抢端口
+    if [ -f /lib/systemd/system/aimilivpn.service ]; then
+        systemctl stop aimilivpn 2>/dev/null || true
+        systemctl disable aimilivpn 2>/dev/null || true
+        rm -f /lib/systemd/system/aimilivpn.service
+        systemctl daemon-reload
+    fi
     clean_routing_tables $LEGACY_TABLES $(seq 200 208)
 
     ( cd "$INSTALL_DIR" && { git_c checkout -- . 2>/dev/null || true; } \

@@ -11,7 +11,7 @@ RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC
 if [ "$(id -u)" != "0" ]; then echo -e "${RED}必须以 root 权限运行${NC}"; exit 1; fi
 
 INSTALL_DIR="/opt/aimilivpn"
-SERVICE_NAME="aimilivpn"
+SERVICE_NAME="MichaelVpn"
 GUARD_SERVICE="vpngate6-guard"
 # 默认装 vpngate6-Dport（完整版：源码 + tests/）。
 # 想装别的分支/仓库: bash install.sh <owner> <repo>
@@ -163,6 +163,14 @@ PYEOF
 
 install_service() {
     echo -e "${CYAN}[3/5] 配置面板服务...${NC}"
+    # 服务名从 aimilivpn 改成了 MichaelVpn：老机器升级时把旧单元清掉，
+    # 否则新旧两个单元都指向同一个主程序，会抢端口
+    if [ -f /lib/systemd/system/aimilivpn.service ]; then
+        systemctl stop aimilivpn 2>/dev/null || true
+        systemctl disable aimilivpn 2>/dev/null || true
+        rm -f /lib/systemd/system/aimilivpn.service
+        systemctl daemon-reload
+    fi
     cat > /lib/systemd/system/${SERVICE_NAME}.service << 'SERVICEEOF'
 [Unit]
 Description=MichaelVPN 6-Channel VPN Gateway
@@ -201,7 +209,7 @@ install_guard_service() {
 [Unit]
 Description=MichaelVPN Channel Guard (fake-connection detector)
 # 面板是它探活的对象，排在面板后面启动才有意义
-After=network.target network-online.target aimilivpn.service
+After=network.target network-online.target MichaelVpn.service
 Wants=network-online.target
 # 崩了要能一直重来（默认 5 次/10 秒 会被 systemd 放弃，守护就没了）
 StartLimitIntervalSec=0
@@ -238,16 +246,16 @@ panel_api() {
     curl -s --max-time 8 "http://localhost:8787$1" 2>/dev/null
 }
 case "${1:-status}" in
-    start)   systemctl start aimilivpn vpngate6-guard 2>/dev/null ;;
-    stop)    systemctl stop aimilivpn vpngate6-guard 2>/dev/null ;;
-    restart) systemctl restart aimilivpn 2>/dev/null; systemctl restart vpngate6-guard 2>/dev/null ;;
+    start)   systemctl start MichaelVpn vpngate6-guard 2>/dev/null ;;
+    stop)    systemctl stop MichaelVpn vpngate6-guard 2>/dev/null ;;
+    restart) systemctl restart MichaelVpn 2>/dev/null; systemctl restart vpngate6-guard 2>/dev/null ;;
     uninstall|卸载)
         echo -e "\033[0;33m正在卸载 MichaelVPN...\033[0m"
-        systemctl stop aimilivpn 2>/dev/null || true
-        systemctl disable aimilivpn 2>/dev/null || true
+        systemctl stop MichaelVpn 2>/dev/null || true
+        systemctl disable MichaelVpn 2>/dev/null || true
         systemctl stop vpngate6-guard 2>/dev/null || true
         systemctl disable vpngate6-guard 2>/dev/null || true
-        rm -f /lib/systemd/system/aimilivpn.service
+        rm -f /lib/systemd/system/MichaelVpn.service
         rm -f /lib/systemd/system/vpngate6-guard.service
         systemctl daemon-reload
         # 清掉 6 条通道 + 测速口的策略路由（tun 没了但 ip rule 还在，会劫持其它程序的流量）
@@ -257,7 +265,7 @@ case "${1:-status}" in
         done
         rm -rf /opt/aimilivpn
         rm -f /usr/bin/ml
-        rm -f /etc/sysctl.d/99-aimilivpn.conf
+        rm -f /etc/sysctl.d/99-MichaelVpn.conf
         pkill -f "vpngate6_multi\|proxy_server_multi\|vpngate6_guard" 2>/dev/null || true
         echo -e "\033[0;32m卸载完成！\033[0m" ;;
     status)
@@ -270,9 +278,9 @@ print('面板: %s  %s' % (d.get('ui_scheme','http').upper(),
 for c in d['channels']:
     s=c['state']; co=c.get('node_country') or '-'; ip=c.get('node_ip') or '-'
     print(f'CH{c[\"index\"]}: {s:15s} {co:20s} IP={ip:16s} :{c[\"proxy_port\"]}')
-print(f'--- {d[\"node_count\"]} nodes ---')" 2>/dev/null || systemctl status aimilivpn --no-pager ;;
+print(f'--- {d[\"node_count\"]} nodes ---')" 2>/dev/null || systemctl status MichaelVpn --no-pager ;;
     guard)   systemctl status vpngate6-guard --no-pager ;;
-    logs)    journalctl -u aimilivpn --no-pager -n 50 -f ;;
+    logs)    journalctl -u MichaelVpn --no-pager -n 50 -f ;;
     guardlogs) journalctl -u vpngate6-guard --no-pager -n 50 -f ;;
     passwd|改密)
         shift
@@ -283,7 +291,7 @@ print(f'--- {d[\"node_count\"]} nodes ---')" 2>/dev/null || systemctl status aim
             exit 1
         fi
         python3 /opt/aimilivpn/vpngate6_multi.py --set-credentials "$@" || exit 1
-        systemctl restart aimilivpn 2>/dev/null
+        systemctl restart MichaelVpn 2>/dev/null
         systemctl restart vpngate6-guard 2>/dev/null ;;
     *)       echo "用法: ml {start|stop|restart|status|guard|logs|guardlogs|passwd|uninstall}" ;;
 esac
@@ -344,7 +352,7 @@ echo ""
 echo -e "${GREEN}部署完成！启动服务...${NC}"
 systemctl start ${SERVICE_NAME} 2>/dev/null || true
 sleep 3
-systemctl is-active ${SERVICE_NAME} &>/dev/null && echo -e "${GREEN}面板运行中${NC}" || echo -e "${YELLOW}检查: systemctl status aimilivpn${NC}"
+systemctl is-active ${SERVICE_NAME} &>/dev/null && echo -e "${GREEN}面板运行中${NC}" || echo -e "${YELLOW}检查: systemctl status ${SERVICE_NAME}${NC}"
 [ "${ML_NO_GUARD:-0}" = "1" ] || systemctl start ${GUARD_SERVICE} 2>/dev/null || true
 PUBLIC_IP=$(curl -s --connect-timeout 5 api64.ipify.org 2>/dev/null || curl -s --connect-timeout 5 api.ipify.org 2>/dev/null || echo "<VPS_IP>")
 
