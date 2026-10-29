@@ -1,6 +1,6 @@
-# AimiliVPN 6-Channel (vpngate6-Dport)
+# MichaelVPN 6-Channel
 
-> 基于 VPNGate 的 6 通道独立出口 VPN 网关
+> 基于 VPNGate 的 6 通道独立出口 VPN 网关（MichaelVPN 6-Channel）
 > 每个通道拥有独立的 OpenVPN 隧道、虚拟网卡(tun)、代理端口和出站 IP
 
 ---
@@ -113,7 +113,7 @@ curl ifconfig.me  # 显示日本 IP
 ## 🎛️ 管理命令
 
 ```bash
-ml status   # 查看9通道状态（会自动按 http/https 探测面板）
+ml status   # 查看 6 通道状态（会自动按 http/https 探测面板）
 ml restart  # 重启面板 + 守护
 ml logs     # 查看面板实时日志
 ml guard    # 查看守护服务状态
@@ -128,7 +128,7 @@ ml passwd <新账号> <新密码>    # 同时改面板账号和密码
 
 ## ⚙️ 核心功能
 
-### 9通道独立管理
+### 6 通道独立管理
 - 每个通道独立 OpenVPN 连接
 - 独立虚拟网卡 (tun0~tun5)
 - 独立 HTTP/SOCKS5 代理端口 (7928~7933)
@@ -593,7 +593,7 @@ ml passwd <新账号> <新密码>      # 账号密码一起改
 
 ```
 /opt/aimilivpn/
-├── vpngate6_multi.py      # 9通道管理器
+├── vpngate6_multi.py      # 6 通道管理器
 ├── proxy_server_multi.py  # 多通道代理
 ├── vpn_utils.py           # IP信息富集（类型判定 + 行政区/坐标）
 ├── region_geo.py          # 行政区定位：日本 47 都道府县表 + 别名归一 + 球面距离（就近降级用）
@@ -801,4 +801,4 @@ systemd 一次都没重启过，是看门狗在自己转圈。典型例子：美
 
 ---
 
-*基于 baoweise-bot/aimili-vpngate 改造，增加9通道多路出站支持*
+*基于 baoweise-bot/aimili-vpngate 改造，增加 6 通道多路出站支持*

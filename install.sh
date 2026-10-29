@@ -36,7 +36,7 @@ cleanup_policy_routing() {
 
 # === 卸载功能 ===
 if [ "${1:-}" = "uninstall" ] || [ "${1:-}" = "卸载" ]; then
-    echo -e "${YELLOW}正在卸载 MichaelVPN...${NC}"
+    echo -e "${YELLOW}正在卸载 MichaelVPN 6-Channel...${NC}"
     systemctl stop ${SERVICE_NAME} 2>/dev/null || true
     systemctl disable ${SERVICE_NAME} 2>/dev/null || true
     # 守护也装了服务，得一起停掉 —— 否则它会继续按老端口探活、给已删掉的通道重连
@@ -99,7 +99,7 @@ deploy_code() {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MichaelVPN 登录</title>
+<title>MichaelVPN 6-Channel 登录</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f13;color:#e0e0e0;display:flex;align-items:center;justify-content:center;min-height:100vh}
@@ -117,8 +117,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 </head>
 <body>
 <div class="card">
-<div class="logo">MichaelVPN</div>
-<div class="sub">9通道 VPN 管理面板</div>
+<div class="logo">MichaelVPN 6-Channel</div>
+<div class="sub">6 通道 VPN 管理面板</div>
 <form method="post" action="/api/login">
 <div class="fg"><label>管理账号</label><input type="text" name="username" required autocomplete="username"></div>
 <div class="fg"><label>安全密码</label><input type="password" name="password" required autocomplete="current-password"></div>
@@ -207,7 +207,7 @@ install_guard_service() {
     echo -e "${CYAN}[4/5] 配置守护服务...${NC}"
     cat > /lib/systemd/system/${GUARD_SERVICE}.service << 'GUARDEOF'
 [Unit]
-Description=MichaelVPN Channel Guard (fake-connection detector)
+Description=MichaelVPN 6-Channel Guard (fake-connection detector)
 # 面板是它探活的对象，排在面板后面启动才有意义
 After=network.target network-online.target MichaelVpn.service
 Wants=network-online.target
@@ -250,7 +250,7 @@ case "${1:-status}" in
     stop)    systemctl stop MichaelVpn vpngate6-guard 2>/dev/null ;;
     restart) systemctl restart MichaelVpn 2>/dev/null; systemctl restart vpngate6-guard 2>/dev/null ;;
     uninstall|卸载)
-        echo -e "\033[0;33m正在卸载 MichaelVPN...\033[0m"
+        echo -e "\033[0;33m正在卸载 MichaelVPN 6-Channel...\033[0m"
         systemctl stop MichaelVpn 2>/dev/null || true
         systemctl disable MichaelVpn 2>/dev/null || true
         systemctl stop vpngate6-guard 2>/dev/null || true

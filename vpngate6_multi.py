@@ -2426,7 +2426,7 @@ PAGE_HTML = r"""<!doctype html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MichaelVPN 9通道</title>
+<title>MichaelVPN 6-Channel</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f13;color:#e0e0e0;font-size:14px}
@@ -2503,8 +2503,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </head>
 <body>
 <div class="hd">
-  <h1>MichaelVPN</h1>
-  <span class="bdg">9通道</span>
+  <h1>MichaelVPN 6-Channel</h1>
+  <span class="bdg">6 通道</span>
   <span class="bdg" id="oc" title="当前各通道出口 IP 占用情况">出口 0/9</span>
   <span class="nc" id="nc">节点: 加载中...</span>
   <button class="btn" style="background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);color:#22c55e" onclick="showAssign()">分配出口</button>

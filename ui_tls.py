@@ -325,7 +325,7 @@ def _write_openssl_conf(conf_path: Path, domain: str, ip: str) -> None:
         "x509_extensions = v3\n"
         "[dn]\n"
         f"CN = {domain}\n"
-        "O = MichaelVPN Panel\n"
+        "O = MichaelVPN 6-Channel Panel\n"
         "[v3]\n"
         "basicConstraints = critical,CA:FALSE\n"
         "keyUsage = critical,digitalSignature,keyEncipherment\n"
